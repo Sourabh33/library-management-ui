@@ -11,26 +11,19 @@ import BookPurchase from './component/BookPurchase';
 import BuyerPage from './component/BuyerPage';
 import OrderPage from './component/OrderPage';
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-        <span className="heading">Title</span>
-      </div>
-      // <div>
-      //   <Router>
-      //     <Switch>
-      //       <Route path="/" exact={true} component={Home} />
-      //       <Route path="/books" exact={true} component={BooksList} />
-      //       <Route path='/books/:id' component={BookPurchase} />
-      //       <Route path='/cart' component={BookCart}/>
-      //       <Route path='/buy' component={BuyerPage}/>
-      //       <Route path='/orders' component={OrderPage}/>
-      //     </Switch>
-      //   </Router>
-      // </div>
-    )
-  }
+export default function App() {
+  return (
+    <div>
+      <Router>
+        <Switch>
+          <Route path="/" exact={true} component={props => <Home {...props} />} />
+          <Route path="/books" exact={true} component={props => <BooksList {...props} />} />
+          <Route path='/books/:id' component={props => <BookPurchase {...props} />} />
+          <Route path='/cart' component={props => <BookCart {...props} />} />
+          <Route path='/buy' component={props => <BuyerPage {...props} />} />
+          <Route path='/orders' component={props => <OrderPage {...props} />} />
+        </Switch>
+      </Router>
+    </div>
+  )
 }
-
-export default App;
