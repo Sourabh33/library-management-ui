@@ -25,7 +25,7 @@ class BooksList extends Component {
     componentDidMount() {
         this.setState({ isLoading: true });
 
-        fetch(UrlConstant.booksUrl + '/books',)
+        fetch(UrlConstant.booksUrl + '/all',)
             .then(response => response.json())
             .then(data => this.setState({ books: data, isLoading: false }))
             .catch(() => this.props.history.push('/'));

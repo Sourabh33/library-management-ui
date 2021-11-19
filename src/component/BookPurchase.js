@@ -27,7 +27,7 @@ class BookPurchase extends Component {
         this.setState({ isLoading: true });
         console.log(this.props.match.params.id);
 
-        fetch(UrlConstant.booksUrl + '/book/' + this.props.match.params.id,)
+        fetch(UrlConstant.booksUrl + '/' + this.props.match.params.id,)
             .then(response => response.json())
             .then(data => this.setState({ books: [data], isLoading: false }))
             .catch(() => this.props.history.push('/'));

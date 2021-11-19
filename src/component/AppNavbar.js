@@ -11,7 +11,7 @@ export default class AppNavbar extends Component {
         super(props);
         this.state = {
             isOpen: false,
-            isLoggedIn: true,
+            isLoggedIn: false,
             isSignUp: false,
             email: '',
             password: '',

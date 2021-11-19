@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import * as UrlConstant from './Constants';
 import { Col, Card, Button, CardBody, CardGroup, CardImg, CardSubtitle, CardText, CardTitle, Row, CardFooter } from "reactstrap";
+import ErrorPage from './ErrorPage';
 
 class HomeCard extends Component {
     constructor(props) {
@@ -12,10 +13,10 @@ class HomeCard extends Component {
     componentDidMount() {
         this.setState({ isLoading: true });
 
-        fetch(UrlConstant.booksUrl + '/books',)
+        fetch(UrlConstant.booksUrl + '/all',)
             .then(response => response.json())
             .then(data => this.setState({ books: data, isLoading: false }))
-            .catch(() => { if(this.props.history) this.props.history.push('/')});
+            .catch(() => { if (this.props.history) this.props.history.push('/') });
     }
 
 
@@ -23,7 +24,7 @@ class HomeCard extends Component {
         const { books, isLoading } = this.state;
 
         if (isLoading) {
-            return <p>Loading...</p>;
+            return <ErrorPage></ErrorPage>;
         }
         const booksdetails = books.map(book => {
             return (
