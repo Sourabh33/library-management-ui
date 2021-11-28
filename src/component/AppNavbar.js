@@ -5,6 +5,7 @@ import {
     NavLink, Modal, ModalBody, ModalFooter, ModalHeader, Form, FormGroup, Label, Input
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import authService from '../services/auth.service';
 
 export default class AppNavbar extends Component {
     constructor(props) {
@@ -35,9 +36,17 @@ export default class AppNavbar extends Component {
         // login logic
         e.preventDefault();
         console.log('e', e);
-        console.log('email: ', this.state.email);
-        console.log('pwd: ', this.state.password);
-        this.setState({ isLoggedIn: true, isOpen: !this.state.isOpen });
+        const username = this.state.username;
+        console.log('username: ', username);
+        const password = this.state.password;
+        console.log('pwd: ', password);
+        const data = authService.login(username, password)
+        if (data.success) {
+            this.setState({ isLoggedIn: true, isOpen: !this.state.isOpen });
+        } else {
+            this.setState({ isLoggedIn: false });
+        }
+
     }
 
     logout = () => {
@@ -49,9 +58,13 @@ export default class AppNavbar extends Component {
         // signup logic
         e.preventDefault();
         console.log('e', e);
-        console.log('email: ', this.state.email);
-        console.log('pwd: ', this.state.password);
-        console.log('username: ', this.state.username);
+        const email = this.state.email;
+        console.log('email: ', email);
+        const password = this.state.password;
+        console.log('pwd: ', password);
+        const username = this.state.username;
+        console.log('username: ', username);
+        authService.signUp(username, password, email);
         this.setState({ isLoggedIn: true });
     }
 
@@ -94,12 +107,12 @@ export default class AppNavbar extends Component {
         </div>) : (<div>
             <Form onSubmit={this.handllogin}>
                 <FormGroup>
-                    <Label for="exampleEmail">Email:</Label>
-                    <Input type="email" name="email" id="exampleEmail"
-                        placeholder="abc@gmail.com" value={email} onChange={this.handleChange} />
+                    <Label for="exampleUsername">Username:</Label>
+                    <Input type="username" name="username" id="exampleUsername"
+                        placeholder="User Name" value={username} onChange={this.handleChange} />
                 </FormGroup>
                 <FormGroup>
-                    <Label for="examplePassword">Password</Label>
+                    <Label for="examplePassword">Password:</Label>
                     <Input type="password" name="password" id="examplePassword"
                         placeholder="password" value={password} onChange={this.handleChange} />
                 </FormGroup>
