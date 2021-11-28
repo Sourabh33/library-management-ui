@@ -9,17 +9,26 @@ class AuthService {
             .post(AUTH_API_URL + `signin?password=${password}&username=${username}`)
             .then(response => {
                 console.log('response: ', response);
-                if (response.data) {
+                if (response.data.response.token) {
                     this.updatedLocalStorage(response.data);
-                    return response.data;
-                } else {
-                    return null;
-                }
+                } 
+                return response.data;
             })
-            .catch(err => {
-                console.log("error: ", err.response.data.message);
-                return err.response.data.message;
-            })
+            // .catch(err => {
+            //     if (err.response) {
+            //         // client received an error response (5xx, 4xx)
+            //         console.log("error: ", err.response.data);
+            //         return Promise.reject(err.response.data);
+            //       } else if (err.request) {
+            //         // client never received a response, or request never left
+            //         console.log("error: ", err);
+            //         return err;
+            //       } else {
+            //         // anything else
+            //         console.log("error: ", err);
+            //         return err;
+            //       }
+            // })
     }
 
     logout() {

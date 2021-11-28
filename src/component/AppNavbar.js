@@ -6,6 +6,7 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import authService from '../services/auth.service';
+import Alert from 'reactstrap/lib/Alert';
 
 export default class AppNavbar extends Component {
     constructor(props) {
@@ -16,13 +17,16 @@ export default class AppNavbar extends Component {
             isSignUp: false,
             email: '',
             password: '',
-            username: ''
+            username: '',
+            error_message: '',
+            isValid: true
         };
         this.toggle = this.toggle.bind(this);
         this.handllogin = this.handllogin.bind(this);
         this.logout = this.logout.bind(this);
         this.handleSignup = this.handleSignup.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.resetLogin = this.resetLogin.bind(this);
     }
 
     toggle(flag) {
@@ -30,6 +34,10 @@ export default class AppNavbar extends Component {
             isOpen: !this.state.isOpen,
             isSignUp: flag
         });
+    }
+
+    resetLogin() {
+        this.setState({ error_message: '', username: '', password: '' });
     }
 
     handllogin = (e) => {
@@ -40,12 +48,23 @@ export default class AppNavbar extends Component {
         console.log('username: ', username);
         const password = this.state.password;
         console.log('pwd: ', password);
-        const data = authService.login(username, password)
-        if (data.success) {
-            this.setState({ isLoggedIn: true, isOpen: !this.state.isOpen });
-        } else {
-            this.setState({ isLoggedIn: false });
-        }
+        authService.login(username, password)
+            .then(
+                (data) => {
+                    console.log('data', data)
+                },
+                (error) => {
+                    let data = error.response.data;
+                    console.log("error: ", data);
+                    this.setState({ isLoggedIn: false, error_message: data.message })
+                }
+            )
+        // console.log('data', data);
+        // if (data.success) {
+        //     this.setState({ isLoggedIn: true, isOpen: !this.state.isOpen });
+        // } else {
+        //     this.setState({ isLoggedIn: false, error_message: data.message });
+        // }
 
     }
 
@@ -70,6 +89,10 @@ export default class AppNavbar extends Component {
 
     handleChange = (e) => {
         const { name, value } = e.target;
+        console.log('value: ', value);
+        if (value == '') {
+            this.setState({ isValid: false });
+        }
         this.setState({ [name]: value });
     }
 
@@ -80,7 +103,9 @@ export default class AppNavbar extends Component {
             isSignUp,
             email,
             password,
-            username
+            username,
+            error_message,
+            isValid
         } = this.state;
         let modalHeader = isSignUp ? 'SignUp' : 'Login';
 
@@ -102,22 +127,38 @@ export default class AppNavbar extends Component {
                         placeholder="password" value={password} onChange={this.handleChange} />
                 </FormGroup>
                 <Button color="primary" style={{ marginRight: '10px' }}>Register</Button>
-                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                {/* <Button color="secondary" onClick={this.toggle}>Cancel</Button> */}
             </Form>
         </div>) : (<div>
             <Form onSubmit={this.handllogin}>
                 <FormGroup>
                     <Label for="exampleUsername">Username:</Label>
                     <Input type="username" name="username" id="exampleUsername"
-                        placeholder="User Name" value={username} onChange={this.handleChange} />
+                        placeholder="User Name" value={username} onChange={this.handleChange}
+                        required
+                        invalid={error_message} />
                 </FormGroup>
                 <FormGroup>
                     <Label for="examplePassword">Password:</Label>
                     <Input type="password" name="password" id="examplePassword"
-                        placeholder="password" value={password} onChange={this.handleChange} />
+                        placeholder="password" value={password} onChange={this.handleChange}
+                        required
+                        invalid={error_message} />
                 </FormGroup>
+                {error_message && (
+                    <FormGroup>
+                        <Alert color="danger">
+                            {error_message}
+                        </Alert>
+                    </FormGroup>
+                )}
+
                 <Button color="primary" style={{ marginRight: '10px' }}>Login</Button>
-                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                {error_message && (
+                    <Button color="warning" style={{ marginRight: '10px' }} onClick={this.resetLogin}>Retry</Button>
+                )}
+
+                {/* <Button color="secondary" onClick={this.toggle}>Cancel</Button> */}
             </Form>
         </div>);
 
