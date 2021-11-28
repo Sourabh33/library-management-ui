@@ -52,6 +52,7 @@ export default class AppNavbar extends Component {
             .then(
                 (data) => {
                     console.log('data', data)
+                    this.setState({ isLoggedIn: true, isOpen: !this.state.isOpen });
                 },
                 (error) => {
                     let data = error.response.data;
@@ -59,12 +60,6 @@ export default class AppNavbar extends Component {
                     this.setState({ isLoggedIn: false, error_message: data.message })
                 }
             )
-        // console.log('data', data);
-        // if (data.success) {
-        //     this.setState({ isLoggedIn: true, isOpen: !this.state.isOpen });
-        // } else {
-        //     this.setState({ isLoggedIn: false, error_message: data.message });
-        // }
 
     }
 
