@@ -19,7 +19,9 @@ export default class AppNavbar extends Component {
             password: '',
             username: '',
             error_message: '',
-            isValid: true
+            isValid: true,
+            success_message: '',
+            isRefresh: false
         };
         this.toggle = this.toggle.bind(this);
         this.handllogin = this.handllogin.bind(this);
@@ -27,6 +29,7 @@ export default class AppNavbar extends Component {
         this.handleSignup = this.handleSignup.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.resetLogin = this.resetLogin.bind(this);
+        this.refresh = this.refresh.bind(this);
     }
 
     toggle(flag) {
@@ -37,7 +40,7 @@ export default class AppNavbar extends Component {
     }
 
     resetLogin() {
-        this.setState({ error_message: '', username: '', password: '' });
+        this.setState({ error_message: '', username: '', password: '', email: '' });
     }
 
     handllogin = (e) => {
@@ -65,7 +68,18 @@ export default class AppNavbar extends Component {
 
     logout = () => {
         // logout logic
+        authService.logout();
         this.setState({ isLoggedIn: false });
+    }
+
+    refresh = () => {
+        let refreshPromise = new Promise(resolve => setTimeout(resolve, 2000))
+        refreshPromise.then(
+            () => {
+                window.location.reload(false);
+            }
+
+        )
     }
 
     handleSignup = (e) => {
@@ -78,8 +92,31 @@ export default class AppNavbar extends Component {
         console.log('pwd: ', password);
         const username = this.state.username;
         console.log('username: ', username);
-        authService.signUp(username, password, email);
-        this.setState({ isLoggedIn: true });
+        this.setState({
+            error_message: '',
+            success_message: ''
+        });
+        authService.signUp(username, password, email)
+            .then(
+                response => {
+                    console.log('response: ', response.data);
+                    this.setState({
+                        success_message: response.data.message,
+                    }, this.refresh())
+                },
+                error => {
+                    const resMessage =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+
+                    this.setState({
+                        error_message: resMessage
+                    });
+                }
+            )
     }
 
     handleChange = (e) => {
@@ -100,7 +137,7 @@ export default class AppNavbar extends Component {
             password,
             username,
             error_message,
-            isValid
+            success_message
         } = this.state;
         let modalHeader = isSignUp ? 'SignUp' : 'Login';
 
@@ -109,20 +146,39 @@ export default class AppNavbar extends Component {
                 <FormGroup>
                     <Label for="exampleEmail">Email:</Label>
                     <Input type="email" name="email" id="exampleEmail"
-                        placeholder="abc@gmail.com" value={email} onChange={this.handleChange} />
+                        placeholder="abc@gmail.com" value={email} onChange={this.handleChange}
+                        required />
                 </FormGroup>
                 <FormGroup>
                     <Label for="exampleUsername">User Name</Label>
                     <Input type="username" name="username" id="exampleUsername"
-                        placeholder="User Name" value={username} onChange={this.handleChange} />
+                        placeholder="User Name" value={username} onChange={this.handleChange}
+                        required />
                 </FormGroup>
                 <FormGroup>
                     <Label for="examplePassword">Password</Label>
                     <Input type="password" name="password" id="examplePassword"
-                        placeholder="password" value={password} onChange={this.handleChange} />
+                        placeholder="password" value={password} onChange={this.handleChange}
+                        required />
                 </FormGroup>
+                {error_message && (
+                    <FormGroup>
+                        <Alert color="danger">
+                            {error_message}
+                        </Alert>
+                    </FormGroup>
+                )}
+                {success_message && (
+                    <FormGroup>
+                        <Alert color="info">
+                            {success_message}
+                        </Alert>
+                    </FormGroup>
+                )}
                 <Button color="primary" style={{ marginRight: '10px' }}>Register</Button>
-                {/* <Button color="secondary" onClick={this.toggle}>Cancel</Button> */}
+                {error_message && (
+                    <Button color="warning" style={{ marginRight: '10px' }} onClick={this.resetLogin}>Retry</Button>
+                )}
             </Form>
         </div>) : (<div>
             <Form onSubmit={this.handllogin}>

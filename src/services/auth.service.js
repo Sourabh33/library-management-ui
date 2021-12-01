@@ -32,21 +32,13 @@ class AuthService {
     }
 
     logout() {
+        localStorage.clear();
 
     }
 
     signUp(username, password, emailId) {
         return axios
-            .post(AUTH_API_URL + `signup?email=${emailId}&password=${password}&newRole=ROLE_USER&username=${username}`)
-            .then(response => {
-                console.log('response: ', response);
-                return response.data ? response.data : null;
-               
-            })
-            .catch(err=> {
-                console.log("error: ", err.response.data.message);
-                return err.response.data.message;
-            })
+            .post(AUTH_API_URL + `signup?email=${emailId}&password=${password}&newRole=ROLE_USER&username=${username}`);
     }
 
     updatedLocalStorage(data) {
